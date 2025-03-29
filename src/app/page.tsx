@@ -1,103 +1,243 @@
-import Image from "next/image";
+"use client";
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm/6 text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2 tracking-[-.01em]">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-[family-name:var(--font-geist-mono)] font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li className="tracking-[-.01em]">
-            Save and see your changes instantly.
-          </li>
-        </ol>
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Slider } from "@/components/ui/slider";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { toast } from "sonner";
+import { Download, RefreshCw, Lock, Unlock } from "lucide-react";
+import ImageDropzone from "@/components/image-dropzone";
+import ImagePreview from "@/components/image-preview";
+import { useImageStore } from "@/lib/store";
+import { SiteHeader } from "@/components/site-header";
+import { FeaturesSection } from "@/components/features-section";
+import { FaqSection } from "@/components/faq-section";
+import { SiteFooter } from "@/components/site-footer";
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 w-full sm:w-auto md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
-        </div>
-      </main>
-      <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
+export default function ImageResizer() {
+	const [aspectRatioLocked, setAspectRatioLocked] = useState(true);
+	const [resizeMethod, setResizeMethod] = useState<"dimensions" | "percentage">(
+		"dimensions"
+	);
+
+	const {
+		originalImage,
+		resizedImage,
+		width,
+		height,
+		percentage,
+		setWidth,
+		setHeight,
+		setPercentage,
+		resizeImage,
+		resetImage,
+		hasImage,
+	} = useImageStore();
+
+	const handleWidthChange = (value: string) => {
+		const newWidth = Number.parseInt(value) || 0;
+		setWidth(newWidth);
+
+		if (aspectRatioLocked && originalImage) {
+			const aspectRatio = originalImage.width / originalImage.height;
+			setHeight(Math.round(newWidth / aspectRatio));
+		}
+	};
+
+	const handleHeightChange = (value: string) => {
+		const newHeight = Number.parseInt(value) || 0;
+		setHeight(newHeight);
+
+		if (aspectRatioLocked && originalImage) {
+			const aspectRatio = originalImage.width / originalImage.height;
+			setWidth(Math.round(newHeight * aspectRatio));
+		}
+	};
+
+	const handlePercentageChange = (value: number[]) => {
+		setPercentage(value[0]);
+	};
+
+	const handleDownload = () => {
+		if (!resizedImage) return;
+
+		const link = document.createElement("a");
+		link.download = "resized-image.jpg";
+		link.href = resizedImage;
+		document.body.appendChild(link);
+		link.click();
+		document.body.removeChild(link);
+
+		toast("Image downloaded");
+	};
+
+	return (
+		<div className="flex flex-col m-auto min-h-screen">
+			<SiteHeader />
+			<main className="flex-1">
+				<div className="container mx-auto py-8 px-4">
+					<h1 className="text-3xl font-bold text-center mb-8 text-primary">
+						Image Resizer
+					</h1>
+
+					<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+						<Card className="col-span-1">
+							<CardContent className="pt-6">
+								{!hasImage ? (
+									<ImageDropzone />
+								) : (
+									<div className="space-y-6">
+										<div className="flex justify-between items-center">
+											<h2 className="text-xl font-semibold">Original Image</h2>
+											<Button variant="outline" size="sm" onClick={resetImage}>
+												<RefreshCw className="mr-2 h-4 w-4" />
+												Reset
+											</Button>
+										</div>
+										<ImagePreview
+											src={originalImage?.url || "/placeholder.svg"}
+											alt="Original image"
+											width={originalImage?.width}
+											height={originalImage?.height}
+										/>
+										<div className="text-sm text-muted-foreground text-center">
+											{originalImage &&
+												`${originalImage.width} × ${originalImage.height} pixels`}
+										</div>
+									</div>
+								)}
+							</CardContent>
+						</Card>
+
+						{hasImage && (
+							<Card className="col-span-1">
+								<CardContent className="pt-6">
+									<div className="space-y-6">
+										<h2 className="text-xl font-semibold">Resized Image</h2>
+
+										<Tabs
+											defaultValue="dimensions"
+											onValueChange={(v) =>
+												setResizeMethod(v as "dimensions" | "percentage")
+											}
+										>
+											<TabsList className="grid w-full grid-cols-2">
+												<TabsTrigger value="dimensions">Dimensions</TabsTrigger>
+												<TabsTrigger value="percentage">Percentage</TabsTrigger>
+											</TabsList>
+
+											<TabsContent
+												value="dimensions"
+												className="space-y-4 pt-4"
+											>
+												<div className="flex items-center gap-4">
+													<div className="grid w-full items-center gap-1.5">
+														<Label htmlFor="width">Width (px)</Label>
+														<Input
+															id="width"
+															type="number"
+															value={width}
+															onChange={(e) =>
+																handleWidthChange(e.target.value)
+															}
+														/>
+													</div>
+
+													<Button
+														variant="ghost"
+														size="icon"
+														className="mt-6"
+														onClick={() =>
+															setAspectRatioLocked(!aspectRatioLocked)
+														}
+													>
+														{aspectRatioLocked ? (
+															<Lock className="h-4 w-4" />
+														) : (
+															<Unlock className="h-4 w-4" />
+														)}
+														<span className="sr-only">
+															{aspectRatioLocked
+																? "Unlock aspect ratio"
+																: "Lock aspect ratio"}
+														</span>
+													</Button>
+
+													<div className="grid w-full items-center gap-1.5">
+														<Label htmlFor="height">Height (px)</Label>
+														<Input
+															id="height"
+															type="number"
+															value={height}
+															onChange={(e) =>
+																handleHeightChange(e.target.value)
+															}
+														/>
+													</div>
+												</div>
+											</TabsContent>
+
+											<TabsContent
+												value="percentage"
+												className="space-y-4 pt-4"
+											>
+												<div className="space-y-4">
+													<div className="flex justify-between">
+														<Label htmlFor="percentage">
+															Scale: {percentage}%
+														</Label>
+													</div>
+													<Slider
+														id="percentage"
+														min={1}
+														max={200}
+														step={1}
+														value={[percentage]}
+														onValueChange={handlePercentageChange}
+													/>
+												</div>
+											</TabsContent>
+										</Tabs>
+
+										<Button
+											className="w-full"
+											onClick={() => resizeImage(resizeMethod)}
+										>
+											Resize Image
+										</Button>
+
+										{resizedImage && (
+											<>
+												<ImagePreview
+													src={resizedImage || "/placeholder.svg"}
+													alt="Resized image"
+													width={width}
+													height={height}
+												/>
+												<Button
+													className="w-full"
+													variant="secondary"
+													onClick={handleDownload}
+												>
+													<Download className="mr-2 h-4 w-4" />
+													Download Resized Image
+												</Button>
+											</>
+										)}
+									</div>
+								</CardContent>
+							</Card>
+						)}
+					</div>
+
+					<FeaturesSection />
+					<FaqSection />
+				</div>
+			</main>
+			<SiteFooter />
+		</div>
+	);
 }
