@@ -16,6 +16,7 @@ import { SiteHeader } from "@/components/site-header";
 import { FeaturesSection } from "@/components/features-section";
 import { FaqSection } from "@/components/faq-section";
 import { SiteFooter } from "@/components/site-footer";
+import { AdBanner } from "@/components/ad-banner";
 
 export default function ImageResizer() {
 	const [aspectRatioLocked, setAspectRatioLocked] = useState(true);
@@ -79,9 +80,18 @@ export default function ImageResizer() {
 			<SiteHeader />
 			<main className="flex-1">
 				<div className="container mx-auto py-8 px-4">
-					<h1 className="text-3xl font-bold text-center mb-8 text-primary">
-						Image Resizer
-					</h1>
+					<div className="text-center mb-8">
+						<h1 className="text-3xl font-bold text-center mb-8 text-primary">
+							Image Resizer
+						</h1>
+						<p className="text-muted-foreground max-w-2xl mx-auto">
+							A simple, fast, and free tool to resize your images while
+							maintaining quality. No uploads required - everything happens in
+							your browser.
+						</p>
+					</div>
+
+					<AdBanner slot="1234567890" format="horizontal" className="mb-8" />
 
 					<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 						<Card className="col-span-1">
@@ -234,7 +244,9 @@ export default function ImageResizer() {
 					</div>
 
 					<FeaturesSection />
+					<AdBanner slot="3456789012" format="rectangle" className="mb-16" />
 					<FaqSection />
+					<AdBanner slot="4567890123" format="horizontal" className="my-16" />
 				</div>
 			</main>
 			<SiteFooter />
