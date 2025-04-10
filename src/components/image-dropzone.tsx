@@ -38,7 +38,7 @@ export default function ImageDropzone() {
 			};
 			reader.readAsDataURL(file);
 		},
-		[setOriginalImage, toast]
+		[setOriginalImage]
 	);
 
 	const { getRootProps, getInputProps, open } = useDropzone({

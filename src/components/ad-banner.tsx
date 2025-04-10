@@ -9,6 +9,13 @@ interface AdBannerProps {
 	className?: string;
 }
 
+// Extend the window interface safely
+declare global {
+	interface Window {
+		adsbygoogle: unknown[];
+	}
+}
+
 export function AdBanner({
 	slot,
 	format = "auto",
@@ -17,17 +24,17 @@ export function AdBanner({
 	const adRef = useRef<HTMLDivElement>(null);
 
 	useEffect(() => {
-		// Only run this in the browser
-		if (typeof window === "undefined") return;
+		if (adRef.current) {
+			const timeout = setTimeout(() => {
+				try {
+					window.adsbygoogle = window.adsbygoogle || [];
+					window.adsbygoogle.push({});
+				} catch (e) {
+					console.error("AdSense error", e);
+				}
+			}, 500); // short delay to ensure layout is ready
 
-		try {
-			// Check if AdSense is loaded
-			if (window.adsbygoogle) {
-				// Push the ad to AdSense for rendering
-				(window.adsbygoogle = window.adsbygoogle || []).push({});
-			}
-		} catch (error) {
-			console.error("AdSense error:", error);
+			return () => clearTimeout(timeout);
 		}
 	}, []);
 
@@ -36,14 +43,18 @@ export function AdBanner({
 			<div className="text-xs text-center text-muted-foreground py-1 border-b">
 				Advertisement
 			</div>
-			<div ref={adRef} className="flex justify-center">
+			<div
+				ref={adRef}
+				style={{ minWidth: "320px" }}
+				className="flex justify-center"
+			>
 				<ins
 					className="adsbygoogle"
 					style={{
 						display: "block",
 						minHeight: format === "horizontal" ? "90px" : "250px",
 					}}
-					data-ad-client="ca-pub-XXXXXXXXXXXXXXXX" // Replace with your AdSense publisher ID
+					data-ad-client={process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID}
 					data-ad-slot={slot}
 					data-ad-format={format}
 					data-full-width-responsive="true"

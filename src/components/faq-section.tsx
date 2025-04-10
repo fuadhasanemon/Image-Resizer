@@ -57,8 +57,8 @@ export function FaqSection() {
 						</AccordionTrigger>
 						<AccordionContent>
 							Since all processing happens in your browser, the file size limit
-							depends on your device's memory. Generally, most modern browsers
-							can handle images up to 50MB without issues.
+							depends on your device&apos;s memory. Generally, most modern
+							browsers can handle images up to 50MB without issues.
 						</AccordionContent>
 					</AccordionItem>
 
@@ -67,9 +67,9 @@ export function FaqSection() {
 							Can I resize multiple images at once?
 						</AccordionTrigger>
 						<AccordionContent>
-							Currently, our tool supports resizing one image at a time. We're
-							working on a batch processing feature that will be available in a
-							future update.
+							Currently, our tool supports resizing one image at a time.
+							We&apos;re working on a batch processing feature that will be
+							available in a future update.
 						</AccordionContent>
 					</AccordionItem>
 				</Accordion>

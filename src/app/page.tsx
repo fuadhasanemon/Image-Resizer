@@ -91,7 +91,7 @@ export default function ImageResizer() {
 						</p>
 					</div>
 
-					<AdBanner slot="1234567890" format="horizontal" className="mb-8" />
+					<AdBanner slot="3725110673" format="horizontal" className="mb-8" />
 
 					<div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
 						<Card className="col-span-1">
@@ -244,9 +244,9 @@ export default function ImageResizer() {
 					</div>
 
 					<FeaturesSection />
-					<AdBanner slot="3456789012" format="rectangle" className="mb-16" />
+					<AdBanner slot="3725110673" format="rectangle" className="mb-16" />
 					<FaqSection />
-					<AdBanner slot="4567890123" format="horizontal" className="my-16" />
+					<AdBanner slot="3725110673" format="horizontal" className="my-16" />
 				</div>
 			</main>
 			<SiteFooter />

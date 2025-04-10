@@ -20,7 +20,8 @@ export default function ImagePreview({
 			<Image
 				src={src || "/placeholder.svg"}
 				alt={alt}
-				fill
+				width={width}
+				height={height}
 				sizes="(max-width: 768px) 100vw, 50vw"
 				style={{ objectFit: "contain" }}
 				priority
