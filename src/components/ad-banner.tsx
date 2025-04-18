@@ -16,6 +16,8 @@ declare global {
 	}
 }
 
+console.log("==========>", process.env.NEXT_PUBLIC_ADSENSE_CLIENT_ID); // For debugging
+
 export function AdBanner({
 	slot,
 	format = "auto",
